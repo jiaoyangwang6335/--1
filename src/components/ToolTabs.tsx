@@ -21,7 +21,7 @@ export default function ToolTabs({ tools, activeTool, onToolChange }: ToolTabsPr
             onClick={() => onToolChange(tool.id)}
             className={`
               whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-              transition-colors duration-200
+              transition-all duration-200 relative
               ${
                 activeTool === tool.id
                   ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -30,6 +30,9 @@ export default function ToolTabs({ tools, activeTool, onToolChange }: ToolTabsPr
             `}
           >
             {tool.name}
+            {activeTool === tool.id && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></span>
+            )}
           </button>
         ))}
       </nav>

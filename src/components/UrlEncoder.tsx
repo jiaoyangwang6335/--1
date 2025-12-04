@@ -51,7 +51,7 @@ export default function UrlEncoder() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700/50 p-6 transition-all duration-300 hover:shadow-xl">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
         URL 编码/解码工具
       </h2>

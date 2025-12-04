@@ -99,7 +99,7 @@ export default function TimestampConverter() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700/50 p-6 transition-all duration-300 hover:shadow-xl">
       <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
           时间戳转换工具
