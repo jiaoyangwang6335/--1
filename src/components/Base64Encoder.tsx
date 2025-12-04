@@ -44,7 +44,7 @@ export default function Base64Encoder() {
     }
   }
 
-  const handleCopy = (content: string, type: 'text' | 'base64') => {
+  const handleCopy = (content: string) => {
     if (content) {
       navigator.clipboard.writeText(content)
     }
@@ -64,7 +64,7 @@ export default function Base64Encoder() {
             </label>
             {text && (
               <button
-                onClick={() => handleCopy(text, 'text')}
+                onClick={() => handleCopy(text)}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 复制
@@ -86,7 +86,7 @@ export default function Base64Encoder() {
             </label>
             {base64 && (
               <button
-                onClick={() => handleCopy(base64, 'base64')}
+                onClick={() => handleCopy(base64)}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 复制

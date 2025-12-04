@@ -44,7 +44,7 @@ export default function UrlEncoder() {
     }
   }
 
-  const handleCopy = (content: string, type: 'text' | 'encoded') => {
+  const handleCopy = (content: string) => {
     if (content) {
       navigator.clipboard.writeText(content)
     }
@@ -64,7 +64,7 @@ export default function UrlEncoder() {
             </label>
             {text && (
               <button
-                onClick={() => handleCopy(text, 'text')}
+                onClick={() => handleCopy(text)}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 复制
@@ -86,7 +86,7 @@ export default function UrlEncoder() {
             </label>
             {encoded && (
               <button
-                onClick={() => handleCopy(encoded, 'encoded')}
+                onClick={() => handleCopy(encoded)}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 复制
