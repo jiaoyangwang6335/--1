@@ -1,0 +1,151 @@
+---
+alwaysApply: true
+---
+你是本项目的协作开发助手，技术栈为 **Vite + React + TypeScript + Tailwind CSS**。  
+你的首要目标：在保证功能正确的前提下，**最大化代码复用，保持长期可维护性**。
+
+请严格遵守以下规则进行所有修改和新代码创建。
+
+---
+
+## 一、整体原则
+
+- 优先复用已有代码、组件和工具函数，**避免重复造轮子**。
+- 任何新代码都必须明确属于某一层：`app / pages / features / shared`，不随意新建额外层级。
+- 页面文件负责**组装**，功能模块负责**实现业务逻辑**，`shared` 负责**跨业务复用**。
+
+---
+
+## 二、目录结构与分层约束
+
+项目的目标结构（示例）：
+
+```txt
+src/
+  app/
+    main.tsx
+    router.tsx
+    providers.tsx
+    layouts/
+  pages/
+    XXXPage/
+  shared/
+    ui/
+    hooks/
+    lib/
+    api/
+    types/
+    config/
+  features/
+    someFeature/
+      ui/
+      api.ts
+      hooks/
+      model/
+
+请严格遵循以下约定：
+	•	app/
+	•	只放入口文件、全局路由、全局 Provider、全局布局等。
+	•	不编写具体业务逻辑。
+	•	pages/
+	•	每个路由对应一个目录或文件，例如：DashboardPage、SettingsPage。
+	•	只做拼装：从 features 和 shared/ui 引入组件，控制布局和页面级状态。
+	•	禁止在 pages 中直接写 API 调用和复杂业务逻辑。
+	•	features/<featureName>/
+	•	拆分业务域，例如：auth、dashboard、patient。
+	•	典型结构：
+	•	ui/：该业务域下的 UI 组件（表格、表单、卡片等）。
+	•	api.ts：该业务域相关的 API 封装。
+	•	hooks/：只属于该业务域的业务 hooks。
+	•	model/：类型定义、常量、业务枚举等。
+	•	新增业务功能时，优先在 features 下创建对应模块，而不是散落在 pages 或 shared。
+	•	shared/
+	•	只存放真正跨业务复用的内容：
+	•	ui/：基础组件库（Button、Input、Card、Modal、Layout 等）。
+	•	hooks/：通用 hooks（useDebounce、useThrottle、useDisclosure、usePagination 等）。
+	•	lib/：工具函数（时间格式化、节流、防抖、校验等）。
+	•	api/：API 客户端基础封装（如 axios/fetch 封装）。
+	•	types/：跨业务通用类型。
+	•	config/：常量、环境变量配置。
+	•	不将强业务相关的逻辑放在 shared 中。
+
+当你需要新建文件或目录时，必须选择上述层级中唯一合理的位置，不得随意创造新的结构。
+
+⸻
+
+三、UI、组件与 Tailwind 使用原则
+	•	所有基础交互组件（Button、Input、Select、Card、Modal 等）必须优先从 shared/ui 引入。
+	•	如发现重复样式的按钮/输入框，应先将其抽象为 shared/ui 组件，然后再复用。
+	•	Tailwind 使用规则：
+	•	尽量使用 tailwind.config.js 中配置的语义化 token（如 bg-primary、text-primary-foreground）。
+	•	禁止在业务组件中大量使用硬编码颜色值（如 bg-[#3489fa]），如确需使用，请先将其加入 Tailwind 主题配置。
+	•	对于复杂且重复出现的 UI 结构（如同类卡片、列表项），优先抽取独立组件，而不是在多个文件里复制粘贴 Tailwind 类名。
+	•	组件职责：
+	•	一个组件只负责一件清晰的事情（展示列表、渲染表单、展示卡片等）。
+	•	页面级逻辑和复杂状态放在页面或 feature hooks 中，不内嵌在基础 UI 组件中。
+
+⸻
+
+四、状态管理与数据请求
+	•	服务端数据（列表、详情、分页数据等）：
+	•	优先使用项目中已有的 数据请求与缓存方案（如 React Query）。
+	•	每个 feature 内部通过自己的 hooks 封装数据获取逻辑，例如：usePatient(id)、useXXXList(params)。
+	•	全局状态：
+	•	若项目已有 Zustand/Redux 等全局状态管理库，必须复用现有方案，禁止新增第二套全局状态管理库。
+	•	全局状态仅存放真正全局的信息（当前用户、权限、主题、布局设置等）。
+	•	局部 UI 状态：
+	•	局部状态（弹窗开关、当前选中 tab 等）优先使用组件内部 useState。
+	•	若弹窗等状态在多个组件之间共享，优先抽象为 feature 内的 hooks（如 useXXXModal）。
+	•	API 层约束：
+	•	所有 HTTP 请求必须先通过 shared/api 中的基础客户端封装，然后在各 features/*/api.ts 中声明业务 API。
+	•	不允许在组件中直接调用 fetch 或裸 axios，必须通过 API 封装函数调用。
+
+⸻
+
+五、TypeScript 类型与安全性
+	•	默认假设 TypeScript 开启严格模式（strict: true）。
+	•	禁止随意使用 any：
+	•	如确实需要使用 any，必须局部且带有简短注释说明原因。
+	•	所有与 API 交互的请求/响应类型必须显式声明：
+	•	通用类型（如分页、统一响应结构）放在 shared/types 中。
+	•	强业务相关类型可以放在对应 feature 的 model/ 中。
+	•	新增导出的函数和组件必须带上清晰的类型签名。
+
+⸻
+
+六、组件和文件粒度控制
+	•	单个文件建议控制在 约 200 行以内：
+	•	当文件明显变大且包含多个职责时，优先拆分为子组件或抽取 hooks。
+	•	页面组件：
+	•	尽量只包含布局、路由参数解析以及 feature 组件的组合。
+	•	复杂业务逻辑必须下沉到 features 的 hooks 或 model 层中。
+	•	重复逻辑处理：
+	•	当在两个及以上地方出现相似的逻辑或 UI 时，优先：
+	•	抽取为 shared/hooks 或 feature 内的 hooks；
+	•	抽取为 shared/ui 或 feature 内的 ui 组件。
+	•	抽取后，替换所有旧实现，避免留下两套实现。
+
+⸻
+
+七、代码风格与工程规范
+	•	遵循项目中已有的 ESLint、Prettier、Tailwind 插件等配置：
+	•	禁止为图方便而关闭已有的 lint 规则。
+	•	新增文件必须满足 lint 要求，如有报错需先修复再提交。
+	•	命名：
+	•	组件使用大驼峰，如 PatientCard、MedicationPlanForm。
+	•	hooks 使用 useXxx 命名，如 usePatient、useDebouncedValue。
+	•	文件夹与文件命名保持一致性，例如 PatientCard.tsx 位于 ui/PatientCard/ 或 ui/PatientCard.tsx。
+
+⸻
+
+八、当你需要“修改结构”或“重构”时
+	•	当你发现明显的重复代码或可以抽象的公共逻辑时，应优先：
+	•	提出抽象方案（例如：“将这两处重复的筛选逻辑抽成 useXXXFilter 放入 shared/hooks”），
+	•	然后执行抽象，并更新所有调用点。
+	•	重构必须在不改变现有行为、保持类型安全的前提下进行。
+
+⸻
+
+只要不与上述规则冲突，你可以自由选择更优雅或更简洁的实现方式。
+在有疑问时，请优先选择“提高复用性和可维护性”的方案，而不是“开发速度最快”的方案。
+
